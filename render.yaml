@@ -1,0 +1,22 @@
+databases:
+  - name: ninmysitedb
+    plan: free
+    databaseName: ninmysite
+    user: ninmysite
+
+services:
+  - type: web
+    plan: free
+    name: ninmysite
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "python -m gunicorn ninmysite.asgi:application -k uvicorn.workers.UvicornWorker"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ninmysitedb
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
